@@ -65,7 +65,7 @@ static const int REQ_TYPE_GET = 0xa1;
  */
 int uvc_get_ctrl_len(uvc_device_handle_t *devh, uint8_t unit, uint8_t ctrl) {
 	unsigned char buf[2];
-
+LOGE(" libusb_control_transfer  ctrl ");
 	int ret = libusb_control_transfer(devh->usb_devh, REQ_TYPE_GET, UVC_GET_LEN,
 			ctrl << 8,
 			unit << 8,	// FIXME this will work wrong, invalid wIndex value
@@ -425,6 +425,7 @@ uvc_error_t uvc_set_focus_auto(uvc_device_handle_t *devh, uint8_t autofocus) {
 //----------------------------------------------------------------------
 uvc_error_t uvc_get_focus_abs(uvc_device_handle_t *devh, short *focus,
 		enum uvc_req_code req_code) {
+		LOGE(" libusb_control_transfer  ctrl 1");
 	uint8_t data[2];
 	uvc_error_t ret;
 
@@ -443,6 +444,7 @@ uvc_error_t uvc_get_focus_abs(uvc_device_handle_t *devh, short *focus,
 }
 
 uvc_error_t uvc_set_focus_abs(uvc_device_handle_t *devh, short focus) {
+LOGE(" libusb_control_transfer  ctrl 2");
 	uint8_t data[2];
 	uvc_error_t ret;
 
@@ -462,6 +464,7 @@ uvc_error_t uvc_set_focus_abs(uvc_device_handle_t *devh, short focus) {
 
 uvc_error_t uvc_get_focus_rel(uvc_device_handle_t *devh, int8_t *focus, uint8_t *speed,
 		enum uvc_req_code req_code) {
+		LOGE(" libusb_control_transfer  ctrl 3");
 	uint8_t data[2];
 	uvc_error_t ret;
 
@@ -481,6 +484,7 @@ uvc_error_t uvc_get_focus_rel(uvc_device_handle_t *devh, int8_t *focus, uint8_t 
 }
 
 uvc_error_t uvc_set_focus_rel(uvc_device_handle_t *devh, int8_t focus, uint8_t speed) {
+LOGE(" libusb_control_transfer  ctrl 4");
 	uint8_t data[2];
 	uvc_error_t ret;
 
@@ -502,6 +506,7 @@ uvc_error_t uvc_set_focus_rel(uvc_device_handle_t *devh, int8_t focus, uint8_t s
 //----------------------------------------------------------------------
 uvc_error_t uvc_get_iris_abs(uvc_device_handle_t *devh, uint16_t *iris,
 		enum uvc_req_code req_code) {
+		LOGE(" libusb_control_transfer  ctrl 4");
 	uint8_t data[2];
 	uvc_error_t ret;
 
@@ -520,6 +525,7 @@ uvc_error_t uvc_get_iris_abs(uvc_device_handle_t *devh, uint16_t *iris,
 }
 
 uvc_error_t uvc_set_iris_abs(uvc_device_handle_t *devh, uint16_t iris) {
+LOGE(" libusb_control_transfer  ctrl 5");
 	uint8_t data[2];
 	uvc_error_t ret;
 
@@ -577,6 +583,7 @@ uvc_error_t uvc_set_iris_rel(uvc_device_handle_t *devh, uint8_t iris) {
 //----------------------------------------------------------------------
 uvc_error_t uvc_get_zoom_abs(uvc_device_handle_t *devh, uint16_t *zoom,
 		enum uvc_req_code req_code) {
+		LOGE(" libusb_control_transfer  ctrl 6");
 	uint8_t data[2];
 	uvc_error_t ret;
 
@@ -594,6 +601,7 @@ uvc_error_t uvc_get_zoom_abs(uvc_device_handle_t *devh, uint16_t *zoom,
 }
 
 uvc_error_t uvc_set_zoom_abs(uvc_device_handle_t *devh, uint16_t zoom) {
+LOGE(" libusb_control_transfer  ctrl 7");
 	uint8_t data[2];
 	uvc_error_t ret;
 
@@ -737,6 +745,7 @@ uvc_error_t uvc_set_pantilt_rel(uvc_device_handle_t *devh,
 
 uvc_error_t uvc_get_roll_abs(uvc_device_handle_t *devh, int16_t *roll,
 	enum uvc_req_code req_code) {
+	LOGE(" libusb_control_transfer  ctrl 5");
 
 	uint8_t data[2];
 	uvc_error_t ret;
@@ -755,7 +764,7 @@ uvc_error_t uvc_get_roll_abs(uvc_device_handle_t *devh, int16_t *roll,
 }
 
 uvc_error_t uvc_set_roll_abs(uvc_device_handle_t *devh, int16_t roll) {
-
+LOGE(" libusb_control_transfer  ctrl 6");
 	uint8_t data[2];
 	uvc_error_t ret;
 
@@ -781,7 +790,7 @@ uvc_error_t uvc_set_roll_abs(uvc_device_handle_t *devh, int16_t roll) {
  */
 uvc_error_t uvc_get_roll_rel(uvc_device_handle_t *devh, int8_t *roll_rel, uint8_t *speed,
 	enum uvc_req_code req_code) {
-
+LOGE(" libusb_control_transfer  ctrl 7");
 	uint8_t data[2];
 	uvc_error_t ret;
 
@@ -807,7 +816,7 @@ uvc_error_t uvc_get_roll_rel(uvc_device_handle_t *devh, int8_t *roll_rel, uint8_
  * @param speed TODO
  */
 uvc_error_t uvc_set_roll_rel(uvc_device_handle_t *devh, int8_t roll_rel, uint8_t speed) {
-
+LOGE(" libusb_control_transfer  ctrl 8");
 	uint8_t data[2];
 	uvc_error_t ret;
 
@@ -1025,6 +1034,7 @@ uvc_error_t uvc_set_digital_roi(uvc_device_handle_t *devh,
 /***** PROCESSING UNIT CONTROLS *****/
 uvc_error_t uvc_get_backlight_compensation(uvc_device_handle_t *devh, short *comp,
 		enum uvc_req_code req_code) {
+		LOGE(" libusb_control_transfer  ctrl 9");
 	uint8_t data[2];
 	uvc_error_t ret;
 
@@ -1043,6 +1053,7 @@ uvc_error_t uvc_get_backlight_compensation(uvc_device_handle_t *devh, short *com
 }
 
 uvc_error_t uvc_set_backlight_compensation(uvc_device_handle_t *devh, short comp) {
+LOGE(" libusb_control_transfer  ctrl 10");
 	uint8_t data[2];
 	uvc_error_t ret;
 
@@ -1061,6 +1072,7 @@ uvc_error_t uvc_set_backlight_compensation(uvc_device_handle_t *devh, short comp
 
 uvc_error_t uvc_get_brightness(uvc_device_handle_t *devh, short *brightness,
 		enum uvc_req_code req_code) {
+		LOGE(" libusb_control_transfer  ctrl 11");
 	uint8_t data[2];
 	uvc_error_t ret;
 
@@ -1079,6 +1091,7 @@ uvc_error_t uvc_get_brightness(uvc_device_handle_t *devh, short *brightness,
 }
 
 uvc_error_t uvc_set_brightness(uvc_device_handle_t *devh, short brightness) {
+LOGE(" libusb_control_transfer  ctrl 12");
 	uint8_t data[2];
 	uvc_error_t ret;
 
@@ -1097,6 +1110,7 @@ uvc_error_t uvc_set_brightness(uvc_device_handle_t *devh, short brightness) {
 
 uvc_error_t uvc_get_contrast(uvc_device_handle_t *devh, uint16_t *contrast,
 		enum uvc_req_code req_code) {
+		LOGE(" libusb_control_transfer  ctrl 13");
 	uint8_t data[2];
 	uvc_error_t ret;
 
@@ -1115,6 +1129,7 @@ uvc_error_t uvc_get_contrast(uvc_device_handle_t *devh, uint16_t *contrast,
 }
 
 uvc_error_t uvc_set_contrast(uvc_device_handle_t *devh, uint16_t contrast) {
+LOGE(" libusb_control_transfer  ctrl 14");
 	uint8_t data[2];
 	uvc_error_t ret;
 
@@ -1169,6 +1184,7 @@ uvc_error_t uvc_set_contrast_auto(uvc_device_handle_t *devh, uint8_t autoContras
 
 uvc_error_t uvc_get_gain(uvc_device_handle_t *devh, uint16_t *gain,
 		enum uvc_req_code req_code) {
+		LOGE(" libusb_control_transfer  ctrl 15");
 	uint8_t data[2];
 	uvc_error_t ret;
 
@@ -1187,6 +1203,7 @@ uvc_error_t uvc_get_gain(uvc_device_handle_t *devh, uint16_t *gain,
 }
 
 uvc_error_t uvc_set_gain(uvc_device_handle_t *devh, uint16_t gain) {
+LOGE(" libusb_control_transfer  ctrl 16 ");
 	uint8_t data[2];
 	uvc_error_t ret;
 
@@ -1252,6 +1269,7 @@ uvc_error_t uvc_set_powerline_freqency(uvc_device_handle_t *devh, uint8_t freq) 
 
 uvc_error_t uvc_get_hue(uvc_device_handle_t *devh, short *hue,
 		enum uvc_req_code req_code) {
+		LOGE(" libusb_control_transfer  ctrl 17 ");
 	uint8_t data[2];
 	uvc_error_t ret;
 
@@ -1270,6 +1288,7 @@ uvc_error_t uvc_get_hue(uvc_device_handle_t *devh, short *hue,
 }
 
 uvc_error_t uvc_set_hue(uvc_device_handle_t *devh, short hue) {
+LOGE(" libusb_control_transfer  ctrl 18 ");
 	uint8_t data[2];
 	uvc_error_t ret;
 
@@ -1324,6 +1343,7 @@ uvc_error_t uvc_set_hue_auto(uvc_device_handle_t *devh, uint8_t autoHue) {
 
 uvc_error_t uvc_get_saturation(uvc_device_handle_t *devh, uint16_t *saturation,
 		enum uvc_req_code req_code) {
+		LOGE(" libusb_control_transfer  ctrl 19 ");
 	uint8_t data[2];
 	uvc_error_t ret;
 
@@ -1342,6 +1362,7 @@ uvc_error_t uvc_get_saturation(uvc_device_handle_t *devh, uint16_t *saturation,
 }
 
 uvc_error_t uvc_set_saturation(uvc_device_handle_t *devh, uint16_t saturation) {
+LOGE(" libusb_control_transfer  ctrl 20 ");
 	uint8_t data[2];
 	uvc_error_t ret;
 
@@ -1360,6 +1381,8 @@ uvc_error_t uvc_set_saturation(uvc_device_handle_t *devh, uint16_t saturation) {
 
 uvc_error_t uvc_get_sharpness(uvc_device_handle_t *devh, uint16_t *sharpness,
 		enum uvc_req_code req_code) {
+		LOGE(" libusb_control_transfer  ctrl 21 ");
+
 	uint8_t data[2];
 	uvc_error_t ret;
 
@@ -1378,6 +1401,8 @@ uvc_error_t uvc_get_sharpness(uvc_device_handle_t *devh, uint16_t *sharpness,
 }
 
 uvc_error_t uvc_set_sharpness(uvc_device_handle_t *devh, uint16_t sharpness) {
+LOGE(" libusb_control_transfer  ctrl 22 ");
+
 	uint8_t data[2];
 	uvc_error_t ret;
 
@@ -1396,6 +1421,8 @@ uvc_error_t uvc_set_sharpness(uvc_device_handle_t *devh, uint16_t sharpness) {
 
 uvc_error_t uvc_get_gamma(uvc_device_handle_t *devh, uint16_t *gamma,
 		enum uvc_req_code req_code) {
+		LOGE(" libusb_control_transfer  ctrl 23 ");
+
 	uint8_t data[2];
 	uvc_error_t ret;
 
@@ -1414,6 +1441,8 @@ uvc_error_t uvc_get_gamma(uvc_device_handle_t *devh, uint16_t *gamma,
 }
 
 uvc_error_t uvc_set_gamma(uvc_device_handle_t *devh, uint16_t gamma) {
+LOGE(" libusb_control_transfer  ctrl 24 ");
+
 	uint8_t data[2];
 	uvc_error_t ret;
 
@@ -1432,6 +1461,8 @@ uvc_error_t uvc_set_gamma(uvc_device_handle_t *devh, uint16_t gamma) {
 
 uvc_error_t uvc_get_white_balance_temperature(uvc_device_handle_t *devh, uint16_t *wb_temperature,
 		enum uvc_req_code req_code) {
+		LOGE(" libusb_control_transfer  ctrl 25 ");
+
 	uint8_t data[2];
 	uvc_error_t ret;
 
@@ -1450,6 +1481,8 @@ uvc_error_t uvc_get_white_balance_temperature(uvc_device_handle_t *devh, uint16_
 }
 
 uvc_error_t uvc_set_white_balance_temperature(uvc_device_handle_t *devh, uint16_t wb_temperature) {
+LOGE(" libusb_control_transfer  ctrl 26 ");
+
 	uint8_t data[2];
 	uvc_error_t ret;
 
@@ -1576,6 +1609,8 @@ uvc_error_t uvc_set_white_balance_component_auto(uvc_device_handle_t *devh, uint
 
 uvc_error_t uvc_get_digital_multiplier(uvc_device_handle_t *devh, uint16_t *multiplier,
 		enum uvc_req_code req_code) {
+		LOGE(" libusb_control_transfer  ctrl 27 ");
+
 	uint8_t data[2];
 	uvc_error_t ret;
 
@@ -1594,6 +1629,8 @@ uvc_error_t uvc_get_digital_multiplier(uvc_device_handle_t *devh, uint16_t *mult
 }
 
 uvc_error_t uvc_set_digital_multiplier(uvc_device_handle_t *devh, uint16_t multiplier) {
+LOGE(" libusb_control_transfer  ctrl 28 ");
+
 	uint8_t data[2];
 	uvc_error_t ret;
 
@@ -1612,6 +1649,8 @@ uvc_error_t uvc_set_digital_multiplier(uvc_device_handle_t *devh, uint16_t multi
 
 uvc_error_t uvc_get_digital_multiplier_limit(uvc_device_handle_t *devh, uint16_t *limit,
 		enum uvc_req_code req_code) {
+		LOGE(" libusb_control_transfer  ctrl 29 ");
+
 	uint8_t data[2];
 	uvc_error_t ret;
 
@@ -1631,6 +1670,8 @@ uvc_error_t uvc_get_digital_multiplier_limit(uvc_device_handle_t *devh, uint16_t
 
 uvc_error_t uvc_set_digital_multiplier_limit(uvc_device_handle_t *devh, uint16_t limit) {
 	uint8_t data[2];
+	LOGE(" libusb_control_transfer  ctrl 30 ");
+
 	uvc_error_t ret;
 
 	SHORT_TO_SW(limit, data);

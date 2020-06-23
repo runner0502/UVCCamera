@@ -147,14 +147,22 @@ public class MainActivity extends BaseActivity implements CameraDialog.CameraDia
 					synchronized (mSync) {
 						final UVCCamera camera = new UVCCamera();
 						camera.open(ctrlBlock);
-						if (DEBUG) Log.i(TAG, "supportedSize:" + camera.getSupportedSize());
+						 Log.e(TAG, "supportedSize:" + camera.getSupportedSize());
+						//camera.setPreviewSize(544, 288, UVCCamera.FRAME_FORMAT_MJPEG);
+						//camera.setPreviewSize(1280, 720, 1, 251, UVCCamera.FRAME_FORMAT_MJPEG, 1.0f);
+						//camera.setPreviewSize(UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, UVCCamera.FRAME_FORMAT_MJPEG);
+
 						try {
-							camera.setPreviewSize(UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, UVCCamera.FRAME_FORMAT_MJPEG);
+							camera.setPreviewSize(UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, UVCCamera.FRAME_FORMAT_YUYV);
+							//camera.setPreviewSize(1280, 720, UVCCamera.FRAME_FORMAT_MJPEG);
 						} catch (final IllegalArgumentException e) {
+							Log.e(TAG, "camera.setPreviewSize fail " + camera.getPreviewSize() + ", mode : FRAME_FORMAT_MJPEG"  );
 							try {
 								// fallback to YUV mode
-								camera.setPreviewSize(UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, UVCCamera.DEFAULT_PREVIEW_MODE);
+								//camera.setPreviewSize(UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, UVCCamera.DEFAULT_PREVIEW_MODE);
 							} catch (final IllegalArgumentException e1) {
+								Log.e(TAG, "camera.setPreviewSize fail " + camera.getPreviewSize() + ", mode : DEFAULT_PREVIEW_MODE"  );
+
 								camera.destroy();
 								return;
 							}

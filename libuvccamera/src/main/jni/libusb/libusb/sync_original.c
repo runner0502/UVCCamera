@@ -91,6 +91,7 @@ int API_EXPORTED libusb_control_transfer(libusb_device_handle *dev_handle,
 	uint8_t bmRequestType, uint8_t bRequest, uint16_t wValue, uint16_t wIndex,
 	unsigned char *data, uint16_t wLength, unsigned int timeout)
 {
+//LOGE("libusb_control_transfer data: %s, length = %d", data,  wLength );
 	struct libusb_transfer *transfer = libusb_alloc_transfer(0);
 	unsigned char *buffer;
 	int completed = 0;

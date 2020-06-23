@@ -373,6 +373,10 @@ public final class DeviceFilter {
 				&& !mSerialNumber.equals(device.getSerialNumber()))
 			return false; */
 
+		if (device.getDeviceClass()==0&&device.getDeviceSubclass()==0) {
+			//android 8 和 9　返回的class数值是不一样的，目前还没找出原因
+			return true;
+		}
 		// check device class/subclass/protocol
 		if (matches(device.getDeviceClass(), device.getDeviceSubclass(), device.getDeviceProtocol())) {
 			return true;

@@ -42,7 +42,7 @@
  * @brief Tools for creating, managing and consuming video streams
  */
 
-#define LOCAL_DEBUG 0
+#define LOCAL_DEBUG 1
 
 #define LOG_TAG "libuvc/stream"
 #if 1	// デバッグ情報を出さない時1
@@ -164,6 +164,7 @@ static enum uvc_frame_format uvc_frame_format_for_guid(uint8_t guid[16]) {
  */
 uvc_error_t uvc_query_stream_ctrl(uvc_device_handle_t *devh,
 		uvc_stream_ctrl_t *ctrl, uint8_t probe, enum uvc_req_code req) {
+		//ctrl->dwMaxVideoFrameSize = 614400;
 	uint8_t buf[48];	// XXX support UVC 1.1 & 1.5
 	size_t len;
 	uvc_error_t err;
@@ -245,6 +246,7 @@ uvc_error_t uvc_query_stream_ctrl(uvc_device_handle_t *devh,
 		ctrl->wCompWindowSize = SW_TO_SHORT(buf + 14);
 		ctrl->wDelay = SW_TO_SHORT(buf + 16);
 		ctrl->dwMaxVideoFrameSize = DW_TO_INT(buf + 18);
+		//ctrl->dwMaxVideoFrameSize = 614400;
 		ctrl->dwMaxPayloadTransferSize = DW_TO_INT(buf + 22);
 
 		if (len > 26) {	// len == 34
@@ -959,6 +961,9 @@ static inline void _uvc_process_payload_iso(uvc_stream_handle_t *strmh, struct l
  * @param transfer Active transfer
  */
 static void _uvc_stream_callback(struct libusb_transfer *transfer) {
+
+LOGE("_uvc_stream_callback %d", transfer->status);
+
 	if UNLIKELY(!transfer) return;
 
 	uvc_stream_handle_t *strmh = transfer->user_data;
@@ -1379,6 +1384,7 @@ uvc_error_t uvc_stream_start(uvc_stream_handle_t *strmh,
  */
 uvc_error_t uvc_stream_start_bandwidth(uvc_stream_handle_t *strmh,
 		uvc_frame_callback_t *cb, void *user_ptr, float bandwidth_factor, uint8_t flags) {
+		LOGE("uvc_stream_start_bandwidth");
 	/* USB interface we'll be using */
 	const struct libusb_interface *interface;
 	int interface_id;
@@ -1422,6 +1428,8 @@ uvc_error_t uvc_stream_start_bandwidth(uvc_stream_handle_t *strmh,
 		LOGE("unlnown frame format");
 		goto fail;
 	}
+	//ctrl->dwMaxVideoFrameSize = 614400;
+	//frame_desc->dwMaxVideoFrameBufferSize = 614400;
 	const uint32_t dwMaxVideoFrameSize = ctrl->dwMaxVideoFrameSize <= frame_desc->dwMaxVideoFrameBufferSize
 		? ctrl->dwMaxVideoFrameSize : frame_desc->dwMaxVideoFrameBufferSize;
 
@@ -1547,11 +1555,13 @@ uvc_error_t uvc_stream_start_bandwidth(uvc_stream_handle_t *strmh,
 
 		/* Set up the transfers */
 		MARK("Set up the transfers");
+		LOGE("Set up the transfers");
+
 		for (transfer_id = 0; transfer_id < LIBUVC_NUM_TRANSFER_BUFS; ++transfer_id) {
 			transfer = libusb_alloc_transfer(packets_per_transfer);
 			strmh->transfers[transfer_id] = transfer;
 			strmh->transfer_bufs[transfer_id] = malloc(total_transfer_size);
-
+LOGE("Set up the transfers 1 id: %d", transfer_id);
 			libusb_fill_iso_transfer(transfer, strmh->devh->usb_devh,
 				format_desc->parent->bEndpointAddress,
 				strmh->transfer_bufs[transfer_id], total_transfer_size,
@@ -1562,6 +1572,7 @@ uvc_error_t uvc_stream_start_bandwidth(uvc_stream_handle_t *strmh,
 		}
 	} else {
 		MARK("bulk transfer mode");
+		LOGE("bulk transfer mode");
 		/** prepare for bulk transfer */
 		for (transfer_id = 0; transfer_id < LIBUVC_NUM_TRANSFER_BUFS; ++transfer_id) {
 			transfer = libusb_alloc_transfer(0);
@@ -1598,6 +1609,7 @@ uvc_error_t uvc_stream_start_bandwidth(uvc_stream_handle_t *strmh,
 		/** @todo clean up transfers and memory */
 		goto fail;
 	}
+		LOGE("uvc_stream_start_bandwidth1");
 
 	UVC_EXIT(ret);
 	return ret;
@@ -1682,6 +1694,7 @@ void _uvc_populate_frame(uvc_stream_handle_t *strmh) {
 	frame->height = frame_desc->wHeight;
 	// XXX set actual_bytes to zero when erro bits is on
 	frame->actual_bytes = LIKELY(!strmh->hold_bfh_err) ? strmh->hold_bytes : 0;
+	LOGE("_uvc_populate_frame frame->actual_bytes: %d, strmh->hold_bytes : %d ", frame->actual_bytes, strmh->hold_bytes );
 
 	switch (frame->frame_format) {
 	case UVC_FRAME_FORMAT_YUYV:

@@ -91,6 +91,16 @@ int API_EXPORTED libusb_control_transfer(libusb_device_handle *dev_handle,
 	uint8_t bmRequestType, uint8_t bRequest, uint16_t wValue, uint16_t wIndex,
 	unsigned char *data, uint16_t wLength, unsigned int timeout)
 {
+unsigned char *data1 = data;
+LOGE("libusb_control_transfer  wLength  = %d", wLength );
+for(int i = 0; i< wLength; i++){
+//LOGE("libusb_control_transfer data: %d, subindex = %d", data[i],  i );
+//if(i < wLength - 1)
+//{
+data1 = data1++;
+//}
+}
+LOGE("libusb_control_transfer  end" );
 	struct libusb_transfer *transfer = libusb_alloc_transfer(0);
 	unsigned char *buffer;
 	int completed = 0;

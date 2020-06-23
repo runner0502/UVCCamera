@@ -1327,7 +1327,7 @@ struct libusb_transfer * LIBUSB_CALL libusb_alloc_transfer(
 	struct usbi_transfer *itransfer = calloc(1, alloc_size);
 	if (UNLIKELY(!itransfer))
 		return NULL;
-
+LOGE(" iso_packets : %d", iso_packets);
 	itransfer->num_iso_packets = iso_packets;
 	usbi_mutex_init(&itransfer->lock, NULL);
 	return USBI_TRANSFER_TO_LIBUSB_TRANSFER(itransfer);
@@ -1568,6 +1568,8 @@ int usbi_handle_transfer_completion(struct usbi_transfer *itransfer,
 	uint8_t flags;
 	int r = 0;
 
+
+
 	/* FIXME: could be more intelligent with the timerfd here. we don't need
 	 * to disarm the timerfd if there was no timer running, and we only need
 	 * to rearm the timerfd if the transfer that expired was the one with
@@ -1598,6 +1600,7 @@ int usbi_handle_transfer_completion(struct usbi_transfer *itransfer,
 	flags = transfer->flags;
 	transfer->status = status;
 	transfer->actual_length = itransfer->transferred;	// XXX therefore transfer->actual_length is also almost always zero on iso transfer mode
+		LOGE("usbi_handle_transfer_completion transfer->actual_length : %d ", transfer->actual_length );
 	usbi_dbg("transfer %p has callback %p", transfer, transfer->callback);
 	if LIKELY(transfer->callback)
 		transfer->callback(transfer);

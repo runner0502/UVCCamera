@@ -1878,6 +1878,7 @@ out:
 
 static int do_streams_ioctl(struct libusb_device_handle *handle, long req,
 	uint32_t num_streams, unsigned char *endpoints, int num_endpoints) {
+	LOGE("do_streams_ioctl");
 	const int fd = _device_handle_priv(handle)->fd;
 	int r;
 	struct usbfs_streams *streams;
@@ -2579,6 +2580,7 @@ static void op_clear_transfer_priv(struct usbi_transfer *itransfer) {
 static int handle_bulk_completion(struct libusb_device_handle *handle,	// XXX added saki
 		struct usbi_transfer *itransfer,
 		struct usbfs_urb *urb) {
+		LOGE("handle_bulk_completion");
 	struct android_transfer_priv *tpriv = usbi_transfer_get_os_priv(itransfer);
 	struct libusb_transfer *transfer = USBI_TRANSFER_TO_LIBUSB_TRANSFER(itransfer);
 	int urb_idx = urb - tpriv->urbs;
@@ -2717,6 +2719,8 @@ completed:
 static int handle_iso_completion(struct libusb_device_handle *handle,	// XXX added saki
 		struct usbi_transfer *itransfer,
 		struct usbfs_urb *urb) {
+			LOGE("handle_iso_completion");
+
 	struct libusb_transfer *transfer = USBI_TRANSFER_TO_LIBUSB_TRANSFER(itransfer);
 	struct android_transfer_priv *tpriv = usbi_transfer_get_os_priv(itransfer);
 	int num_urbs = tpriv->num_urbs;

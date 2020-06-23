@@ -41,7 +41,7 @@
 #include "UVCPreview.h"
 #include "libuvc_internal.h"
 
-#define	LOCAL_DEBUG 0
+#define	LOCAL_DEBUG 1
 #define MAX_FRAME 4
 #define PREVIEW_PIXEL_BYTES 4	// RGBA/RGBX
 #define FRAME_POOL_SZ MAX_FRAME + 2
@@ -116,8 +116,9 @@ uvc_frame_t *UVCPreview::get_frame(size_t data_bytes) {
 	}
 	pthread_mutex_unlock(&pool_mutex);
 	if UNLIKELY(!frame) {
-		LOGW("allocate new frame");
+		LOGW("allocate new frame 1");
 		frame = uvc_allocate_frame(data_bytes);
+		LOGW("allocate new frame 2");
 	}
 	return frame;
 }
@@ -387,38 +388,47 @@ int UVCPreview::stopPreview() {
 //
 //**********************************************************************
 void UVCPreview::uvc_preview_frame_callback(uvc_frame_t *frame, void *vptr_args) {
+LOGE("uvc_preview_frame_callback");
 	UVCPreview *preview = reinterpret_cast<UVCPreview *>(vptr_args);
 	if UNLIKELY(!preview->isRunning() || !frame || !frame->frame_format || !frame->data || !frame->data_bytes) return;
 	if (UNLIKELY(
 		((frame->frame_format != UVC_FRAME_FORMAT_MJPEG) && (frame->actual_bytes < preview->frameBytes))
 		|| (frame->width != preview->frameWidth) || (frame->height != preview->frameHeight) )) {
 
-#if LOCAL_DEBUG
-		LOGD("broken frame!:format=%d,actual_bytes=%d/%d(%d,%d/%d,%d)",
+
+		LOGE("broken frame!:format=%d,actual_bytes=%d/%d(%d,%d/%d,%d)",
 			frame->frame_format, frame->actual_bytes, preview->frameBytes,
 			frame->width, frame->height, preview->frameWidth, preview->frameHeight);
-#endif
+LOGE("uvc_preview_frame_callback 1");
 		return;
 	}
+
+			LOGE("frame!:format=%d,actual_bytes=%d/%d(%d,%d/%d,%d)",
+    			frame->frame_format, frame->actual_bytes, preview->frameBytes,
+    			frame->width, frame->height, preview->frameWidth, preview->frameHeight);
 	if (LIKELY(preview->isRunning())) {
 		uvc_frame_t *copy = preview->get_frame(frame->data_bytes);
 		if (UNLIKELY(!copy)) {
-#if LOCAL_DEBUG
+//#if LOCAL_DEBUG
 			LOGE("uvc_callback:unable to allocate duplicate frame!");
-#endif
+//#endif
+LOGE("uvc_preview_frame_callback 2");
 			return;
 		}
 		uvc_error_t ret = uvc_duplicate_frame(frame, copy);
 		if (UNLIKELY(ret)) {
+		LOGE("uvc_preview_frame_callback 3");
 			preview->recycle_frame(copy);
 			return;
 		}
+		LOGE("uvc_preview_frame_callback 4");
 		preview->addPreviewFrame(copy);
 	}
+	LOGE("uvc_preview_frame_callback 5");
 }
 
 void UVCPreview::addPreviewFrame(uvc_frame_t *frame) {
-
+LOGE("addPreviewFrame");
 	pthread_mutex_lock(&preview_mutex);
 	if (isRunning() && (previewFrames.size() < MAX_FRAME)) {
 		previewFrames.put(frame);
@@ -511,7 +521,7 @@ int UVCPreview::prepare_preview(uvc_stream_ctrl_t *ctrl) {
 
 void UVCPreview::do_preview(uvc_stream_ctrl_t *ctrl) {
 	ENTER();
-
+LOGW("Streaming...");
 	uvc_frame_t *frame = NULL;
 	uvc_frame_t *frame_mjpeg = NULL;
 	uvc_error_t result = uvc_start_streaming_bandwidth(
@@ -527,26 +537,40 @@ void UVCPreview::do_preview(uvc_stream_ctrl_t *ctrl) {
 		if (frameMode) {
 			// MJPEG mode
 			for ( ; LIKELY(isRunning()) ; ) {
+			LOGW("waitPreviewFrame");
 				frame_mjpeg = waitPreviewFrame();
+							LOGW("waitPreviewFrame1 ");
+							//continue;
+
 				if (LIKELY(frame_mjpeg)) {
 					frame = get_frame(frame_mjpeg->width * frame_mjpeg->height * 2);
 					result = uvc_mjpeg2yuyv(frame_mjpeg, frame);   // MJPEG => yuyv
 					recycle_frame(frame_mjpeg);
 					if (LIKELY(!result)) {
+					LOGW("draw_preview_one 1 ");
 						frame = draw_preview_one(frame, &mPreviewWindow, uvc_any2rgbx, 4);
+						LOGW("draw_preview_one 2 ");
 						addCaptureFrame(frame);
 					} else {
+					LOGW("recycle_frame  ");
 						recycle_frame(frame);
 					}
 				}
 			}
 		} else {
+						LOGW("preview yuv  ");
 			// yuvyv mode
 			for ( ; LIKELY(isRunning()) ; ) {
+			LOGW("preview yuv 1 ");
 				frame = waitPreviewFrame();
+				LOGW("preview yuv  2");
 				if (LIKELY(frame)) {
+
 					frame = draw_preview_one(frame, &mPreviewWindow, uvc_any2rgbx, 4);
+									LOGW("draw_preview_one  1");
 					addCaptureFrame(frame);
+									LOGW("draw_preview_one  2");
+
 				}
 			}
 		}
@@ -566,6 +590,7 @@ void UVCPreview::do_preview(uvc_stream_ctrl_t *ctrl) {
 }
 
 static void copyFrame(const uint8_t *src, uint8_t *dest, const int width, int height, const int stride_src, const int stride_dest) {
+LOGW("copyFrame ");
 	const int h8 = height % 8;
 	for (int i = 0; i < h8; i++) {
 		memcpy(dest, src, width);
@@ -588,6 +613,8 @@ static void copyFrame(const uint8_t *src, uint8_t *dest, const int width, int he
 		dest += stride_dest; src += stride_src;
 		memcpy(dest, src, width);
 		dest += stride_dest; src += stride_src;
+
+
 	}
 }
 
@@ -612,6 +639,7 @@ int copyToSurface(uvc_frame_t *frame, ANativeWindow **window) {
 			// use lower height
 			const int h = frame->height < buffer.height ? frame->height : buffer.height;
 			// transfer from frame data to the Surface
+			LOGW("copyToSurface w = %d, h=%d, src_step=%d, dest_step=%d", w, h, src_step, dest_step);
 			copyFrame(src, dest, w, h, src_step, dest_step);
 			ANativeWindow_unlockAndPost(*window);
 		} else {
@@ -626,7 +654,7 @@ int copyToSurface(uvc_frame_t *frame, ANativeWindow **window) {
 // changed to return original frame instead of returning converted frame even if convert_func is not null.
 uvc_frame_t *UVCPreview::draw_preview_one(uvc_frame_t *frame, ANativeWindow **window, convFunc_t convert_func, int pixcelBytes) {
 	// ENTER();
-
+LOGE("draw_preview_one");
 	int b = 0;
 	pthread_mutex_lock(&preview_mutex);
 	{
